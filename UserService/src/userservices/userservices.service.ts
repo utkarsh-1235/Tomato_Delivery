@@ -9,6 +9,7 @@ import { UserLoginDto } from 'src/user/UserLoginDto';
 import Redis from 'ioredis';
 import { UserUpdateDto } from 'src/user/UserUpdateDto';
 import { JwtService } from '@nestjs/jwt';
+import { ClientKafka } from '@nestjs/microservices';
 
 @Injectable()
 export class UserservicesService {
@@ -19,8 +20,15 @@ export class UserservicesService {
     @Inject('REDIS_CLIENT')
     private redis: Redis,
 
+    @Inject('KAFKA_SERVICE')
+    private readonly kafka: ClientKafka,
+
     private jwtService: JwtService,
 ){}
+
+    async onModuleInit(){
+        await this.kafka.connect();
+    }
     async CreateUser(userDto: UserDto){
         const {firstName, lastName, email, password, role} = userDto;
         
@@ -49,6 +57,13 @@ export class UserservicesService {
         //   console.log(savedUser);
           // ✅ remove password
           const { password: _, ...result } = savedUser;
+
+          this.kafka.emit('user-created',{
+            email: userDto.email,
+            timeStamp: new Date()
+          }
+          )
+
           return {
             status: true,
             message: "User registered successfully",
@@ -84,7 +99,13 @@ export class UserservicesService {
         }
         
         const token = this.jwtService.sign(payload);
-        console.log(token);
+        // console.log(token);
+
+        this.kafka.emit('user-authenticated',{
+            email: userLoginDto.email,
+            timeStamp: new Date()
+        })
+
         return {
             status: true,
             message: "Loggedin successfully",

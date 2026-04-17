@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JWTStrategy } from 'src/auth/jwt.strategy';
+import { KafkaModule } from 'src/kafka-events/kafka.module';
 import { RedisModule } from 'src/redis/redis.module';
 import { User } from 'src/user/user.entity';
 import { UsercontrollerController } from 'src/usercontroller/usercontroller.controller';
@@ -18,7 +19,8 @@ import { UserservicesService } from 'src/userservices/userservices.service';
               signOptions: { expiresIn: '300s' },
             }),
           }),
-         RedisModule
+         RedisModule,
+         KafkaModule,
         ],
     providers: [UserservicesService, JWTStrategy],
     controllers: [UsercontrollerController],

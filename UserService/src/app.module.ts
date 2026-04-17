@@ -27,7 +27,7 @@ import { RedisModule } from './redis/redis.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         const dbUrl = config.get<string>('DATABASE_URL');
-        console.log('Loaded DB URL:', dbUrl); // ✅ correct place
+        // console.log('Loaded DB URL:', dbUrl); // ✅ correct place
     
         return {
           type: 'postgres',
@@ -43,8 +43,8 @@ import { RedisModule } from './redis/redis.module';
     })
     
   ],
-  controllers: [AppController, UsercontrollerController],
-  providers: [AppService, UserservicesService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
