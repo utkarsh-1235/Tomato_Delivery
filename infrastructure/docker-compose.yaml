@@ -2,14 +2,14 @@ version: '3.8'
 
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.5.0
     ports:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.5.0
     ports:
       - "9092:9092"
     depends_on:
@@ -20,29 +20,23 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-  
+
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
-    
 
   user-service:
     build:
       context: ../UserService
       dockerfile: Dockerfile
-    
     ports:
-      - "3001:3000" # host:container
+      - "3001:3000"
     depends_on:
       - kafka
+      - redis
     env_file:
       - ../UserService/.env
     environment:
-      # Keep ONLY values that should be overridden at compose-time.
-      # Secrets/DB config come from `env_file` to avoid blank `${VAR}` substitutions.
       KAFKA_BROKER: kafka:9092
       REDIS_HOST: redis
-
-
-  
