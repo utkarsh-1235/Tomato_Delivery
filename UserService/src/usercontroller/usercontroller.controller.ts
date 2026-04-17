@@ -27,6 +27,19 @@ export class UsercontrollerController {
      return this.userService.GetUserByEmail(req.user.email);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Post('logout')      //route: /users/logout
+  @HttpCode(HttpStatus.OK)
+  logout(@Req() req: any){
+    const authHeader = req?.headers?.authorization ?? '';
+    const token =
+      typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
+        ? authHeader.slice(7)
+        : '';
+
+    return this.userService.logout(token);
+  }
+
   @Put('update')
   updateUser(
    @Query('email')email: string,

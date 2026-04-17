@@ -4,6 +4,7 @@ import { UserDto } from 'src/user/UserRegisterdto';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { createHash } from 'crypto';
 import { UserLoginDto } from 'src/user/UserLoginDto';
 import Redis from 'ioredis';
 import { UserUpdateDto } from 'src/user/UserUpdateDto';
@@ -158,5 +159,24 @@ export class UserservicesService {
             data: result
         }
 
+    }
+
+    async logout(token: string) {
+        try {
+            const decoded: any = this.jwtService.verify(token);
+    
+            const exp = decoded?.exp;
+            const nowSeconds = Math.floor(Date.now() / 1000);
+            const remainingSeconds = exp ? Math.max(1, exp - nowSeconds) : 300;
+    
+            const tokenHash = createHash('sha256').update(token).digest('hex');
+            const blacklistKey = `jwt:blacklist:${tokenHash}`;
+    
+            await this.redis.set(blacklistKey, '1', 'EX', remainingSeconds);
+    
+            return { status: true, message: 'Logged out successfully' };
+        } catch (error) {
+            return { status: false, message: 'Invalid or expired token' };
+        }
     }
 }
