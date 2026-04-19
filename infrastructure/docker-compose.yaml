@@ -40,3 +40,17 @@ services:
     environment:
       KAFKA_BROKER: kafka:9092
       REDIS_HOST: redis
+
+  email-service:
+    build:
+      context: ../email-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    depends_on:
+      - kafka
+    env_file:
+      - ../email-service/.env   # ✅ THIS loads .env
+    environment:
+      KAFKA_BROKER: kafka:9092
+    restart: always

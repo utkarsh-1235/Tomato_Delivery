@@ -1,0 +1,20 @@
+# Base image
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy project files
+COPY . .
+
+# Build NestJS app
+RUN npm run build
+
+# Run app
+CMD ["node", "dist/main"]
