@@ -26,4 +26,13 @@ export class EmailService {
     
         console.log('✅ Email sent to:', to);
       }
+
+      async sendConfirmOrderEmail(to: string){
+       await this.transporter.sendConfirmOrderEmail( {
+        from: 'utkarsh.saxena13sept@gmail.com',
+        to,
+        subject: 'Order Confirmed',
+        html: ``
+      })
+      }
 }
