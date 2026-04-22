@@ -3,10 +3,12 @@ import { OrderController } from './order/order.controller';
 import { OrderService } from './order/order.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Order, orderSchema } from './order/order.schema';
+import { RedisModule } from './Redis/redis.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{name: Order.name, schema: orderSchema}])
+    MongooseModule.forFeature([{name: Order.name, schema: orderSchema}]),
+    RedisModule
   ],
   controllers: [OrderController],
   providers: [OrderService]

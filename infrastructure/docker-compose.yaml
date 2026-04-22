@@ -41,6 +41,19 @@ services:
       KAFKA_BROKER: kafka:9092
       REDIS_HOST: redis
 
+  order-service:
+    build:
+      context: ../order-service
+      dockerfile: Dockerfile
+    ports:
+      - 3004:3003
+    depends_on:
+      - redis
+    env_file:
+      - ../order-service/.env
+    environment:
+      REDIS_HOST: redis    
+
   email-service:
     build:
       context: ../email-service
