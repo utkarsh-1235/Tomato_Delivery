@@ -4,25 +4,34 @@ import { Order } from './order.schema';
 import { Model } from 'mongoose';
 import { UpdateOrderDto } from './updateOrderDto';
 import Redis from 'ioredis';
+import { ClientKafka } from '@nestjs/microservices';
 
 @Injectable()
 export class OrderService {
     constructor(
         @InjectModel(Order.name) private orderModel: Model<Order>,
-
+        @Inject('KAFKA_SERVICE') private kafka: ClientKafka,
         @Inject('REDIS_CLIENT') private redis: Redis,
     ){}
   
-    async createOrder(data){
+    async createOrder(data: Order){
         const order = new this.orderModel(data);
-        const cachedKey = `orders:user:${data.userId}`
+        const savedOrder = await order.save();
+        const cachedKey = `orders:user:${savedOrder.userId}`
         //Delete cache
         await this.redis.del(cachedKey);
+
+        this.kafka.emit('order-created', {
+            userId: savedOrder?.userId,
+            orderId: savedOrder?._id,
+            totalAmount: savedOrder?.totalAmount,
+            timestamp: new Date()
+        });
         
-        return order.save();
+        return savedOrder;
     }
 
-    async getOrderByUser(userId){
+    async getOrderByUser(userId: string){
          
         const cachedKey = `orders:user:${userId}`
         //1 check orders in cache
@@ -42,7 +51,7 @@ export class OrderService {
         return userOrder;
     }
 
-    async getOrderById(id){
+    async getOrderById(id: string){
         const cachedKey = `order:${id}`;
 
         // 1 Check Cache
@@ -67,7 +76,8 @@ export class OrderService {
         // Delete cache
         await this.redis.del(cachedKey);
 
-        return this.orderModel.findByIdAndUpdate(
+
+        const updatedOrder = await this.orderModel.findByIdAndUpdate(
             id,
             {
                 $set: {
@@ -84,5 +94,19 @@ export class OrderService {
                 arrayFilters: [{ 'item.productId': data.productId }],
             },
         );
+        if (!updatedOrder) {
+            throw new Error('Order not found');
+          }
+        //Delete orders from users cache
+        await this.redis.del(`orders:user:${updatedOrder?.userId}`);
+
+        this.kafka.emit('order-updated', {
+            id,
+            userId: updatedOrder?.userId,
+            orderId: updatedOrder?._id,
+            totalAmount: updatedOrder?.totalAmount
+        });
+
+        return updatedOrder;
     }
 }

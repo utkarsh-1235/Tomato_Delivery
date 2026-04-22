@@ -48,10 +48,12 @@ services:
     ports:
       - 3004:3003
     depends_on:
+      - kafka
       - redis
     env_file:
       - ../order-service/.env
     environment:
+      KAFKA_BROKER: kafka:9092
       REDIS_HOST: redis    
 
   email-service:

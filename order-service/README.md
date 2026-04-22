@@ -1,98 +1,335 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🧾 Order Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📌 Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The **Order Service** is a microservice responsible for managing orders in the system.
+It handles order creation, retrieval, updates, caching, and event-driven communication using Kafka.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🏗️ Tech Stack
 
-## Project setup
+* **NestJS** – Backend framework
+* **MongoDB (Mongoose)** – NoSQL database
+* **Redis** – Caching layer
+* **Kafka** – Event-driven communication
+* **Docker** – Containerization
 
-```bash
-$ npm install
+---
+
+## ⚙️ Features
+
+* Create orders
+* Get orders by user
+* Get order by ID
+* Update order
+* Redis caching (read-through + invalidation)
+* Kafka event publishing:
+
+  * `order-created`
+  * `order-updated`
+
+---
+
+## 📁 Project Structure
+
+```
+order-service/
+│── src/
+│   ├── orders/
+│   │   ├── order.controller.ts
+│   │   ├── order.service.ts
+│   │   ├── order.schema.ts
+│   │   ├── dto/
+│   │
+│   ├── kafka/
+│   │   ├── kafka.module.ts
+│   │
+│   ├── redis/
+│   │   ├── redis.module.ts
+│   │
+│   ├── app.module.ts
+│   ├── main.ts
+│
+│── .env
+│── Dockerfile
+│── package.json
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## 🔑 Environment Variables (.env)
 
-# watch mode
-$ npm run start:dev
+```
+PORT=3004
 
-# production mode
-$ npm run start:prod
+DATABASE_URL=mongodb+srv://<username>:<password>@cluster.mongodb.net/orderdb
+
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+KAFKA_BROKER=kafka:9092
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## 🚀 Installation & Setup
 
-# e2e tests
-$ npm run test:e2e
+### 1️⃣ Install dependencies
 
-# test coverage
-$ npm run test:cov
+```
+npm install
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 2️⃣ Run locally
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+### 3️⃣ Run with Docker
 
-Check out a few resources that may come in handy when working with NestJS:
+```
+docker-compose up --build
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## 🔌 Kafka Configuration
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Kafka Module
 
-## Stay in touch
+```ts
+ClientsModule.register([
+  {
+    name: 'KAFKA_SERVICE',
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: [process.env.KAFKA_BROKER || 'kafka:9092'],
+      },
+      consumer: {
+        groupId: 'order-consumer',
+      },
+    },
+  },
+]);
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+### Connect Kafka in main.ts
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```ts
+app.connectMicroservice({
+  transport: Transport.KAFKA,
+  options: {
+    client: {
+      brokers: ['kafka:9092'],
+    },
+    consumer: {
+      groupId: 'order-consumer',
+    },
+  },
+});
+
+await app.startAllMicroservices();
+```
+
+---
+
+## 📡 Events
+
+### 📤 Produced Events
+
+| Event Name    | Description            |
+| ------------- | ---------------------- |
+| order-created | Triggered on new order |
+| order-updated | Triggered on update    |
+
+---
+
+### Example Event Payload
+
+```
+{
+  "userId": "4",
+  "orderId": "abc123",
+  "totalAmount": 500,
+  "timestamp": "2026-04-22T10:00:00Z"
+}
+```
+
+---
+
+## 🧠 Redis Caching Strategy
+
+### Cache Keys
+
+```
+orders:user:<userId>
+order:<orderId>
+```
+
+### Flow
+
+1. Check cache
+2. If MISS → fetch from DB
+3. Store in Redis (TTL: 600s)
+4. Invalidate cache on create/update
+
+---
+
+## 📦 API Endpoints
+
+### 1️⃣ Create Order
+
+```
+POST /orders
+```
+
+#### Request Body
+
+```
+{
+  "userId": "4",
+  "items": [
+    {
+      "productId": "p1",
+      "quantity": 2,
+      "price": 100
+    }
+  ],
+  "totalAmount": 200
+}
+```
+
+---
+
+### 2️⃣ Get Orders by User
+
+```
+GET /orders/:userId
+```
+
+---
+
+### 3️⃣ Get Order by ID
+
+```
+GET /orders/id/:id
+```
+
+---
+
+### 4️⃣ Update Order
+
+```
+PUT /orders/:id
+```
+
+---
+
+## 🧾 Order Schema
+
+```ts
+@Schema()
+export class Order {
+  @Prop()
+  userId: string;
+
+  @Prop([
+    {
+      productId: String,
+      quantity: Number,
+      price: Number,
+    },
+  ])
+  items: {
+    productId: string;
+    quantity: number;
+    price: number;
+  }[];
+
+  @Prop()
+  totalAmount: number;
+}
+```
+
+---
+
+## 🔄 Order Flow (Architecture)
+
+```
+User → Order Service → MongoDB
+                 ↓
+              Redis Cache
+                 ↓
+              Kafka Event → Payment Service → Inventory Service
+```
+
+---
+
+## 🧪 Testing Kafka
+
+### Produce
+
+```
+kafka-console-producer --topic order-created --bootstrap-server localhost:9092
+```
+
+### Consume
+
+```
+kafka-console-consumer --topic order-created --bootstrap-server localhost:9092 --from-beginning
+```
+
+---
+
+## ⚠️ Common Issues
+
+### ❌ Kafka not sending events
+
+* Missing `kafka.connect()`
+* Wrong broker (`localhost` vs `kafka`)
+* Microservice not started
+
+---
+
+### ❌ Redis connection error
+
+* Check `REDIS_HOST`
+* Ensure Redis container is running
+
+---
+
+### ❌ MongoDB connection error
+
+* Check connection string
+* Allow IP access in Atlas
+
+---
+
+## 🚀 Future Improvements
+
+* Add Order Status (PENDING, CONFIRMED, FAILED)
+* Integrate Payment Service
+* Add Inventory Service
+* Implement Saga Pattern
+* Add retries & DLQ (Dead Letter Queue)
+
+---
+
+## 👨‍💻 Author
+
+Utkarsh Saxena
+
+---
+
+## 📜 License
+
+MIT
