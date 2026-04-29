@@ -56,6 +56,22 @@ services:
       KAFKA_BROKER: kafka:9092
       REDIS_HOST: redis    
 
+  payment-service:
+    build:
+      context: ../payment-service
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3010
+    depends_on:
+      - kafka
+      - redis
+    env_file:
+      - ../payment-service/.env
+    environment:
+      KAFKA_BROKER: kafka:9092
+      REDIS_HOST: redis
+    restart: always
+
   email-service:
     build:
       context: ../email-service

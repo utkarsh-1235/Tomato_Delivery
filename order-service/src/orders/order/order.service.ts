@@ -4,7 +4,7 @@ import { Order } from './order.schema';
 import { Model } from 'mongoose';
 import { UpdateOrderDto } from './updateOrderDto';
 import Redis from 'ioredis';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientKafka, EventPattern } from '@nestjs/microservices';
 
 @Injectable()
 export class OrderService {
@@ -109,4 +109,29 @@ export class OrderService {
 
         return updatedOrder;
     }
+
+    async confirmOrderUpdate(data: any){
+        const { orderId, status } = data;
+
+        console.log('📥 Payment event received:', data);
+      
+        const updatedOrder = await this.orderModel.findByIdAndUpdate(
+          orderId,
+          {
+            status: status || 'CONFIRMED',
+          },
+          { new: true },
+        );
+      
+        if (!updatedOrder) {
+          throw new Error('Order not found');
+        }
+      
+        // 🔥 Clear caches
+        await this.redis.del(`order:${orderId}`);
+        await this.redis.del(`orders:user:${updatedOrder.userId}`);
+      
+        return updatedOrder;
+    }
+
 }
