@@ -98,7 +98,13 @@ POST /users/register
 POST /users/login
 
 ### 👤 Get Profile (Protected)
-GET /users/profile?email=<email>
+GET /users/profile
+
+Headers:
+Authorization: Bearer <token>
+
+### 🚪 Logout (Protected)
+POST /users/logout
 
 Headers:
 Authorization: Bearer <token>
@@ -147,8 +153,31 @@ npm run start:dev
 
 ---
 
-## 🧪 Testing APIs
-Use Postman or any API client.
+## 🧪 Testing
+
+### Unit tests (Jest)
+Run service/controller unit tests:
+
+npm run test
+
+Updated in this repo:
+- Added/updated unit tests for `UserservicesService.Login()` in `src/userservices/userservices.service.spec.ts`
+
+### E2E tests (Jest + SuperTest)
+Run end-to-end tests:
+
+npm run test:e2e
+
+Updated in this repo:
+- Expanded `test/app.e2e-spec.ts` to cover:
+  - `POST /users/register` (201, 409)
+  - `POST /users/login` (200, 409 user-not-exist, 409 invalid-password)
+  - `GET /users/profile` (200 cached response, 401 missing token)
+  - `POST /users/logout` (200 success, 200 invalid/expired token message, 401 missing token)
+  - `PUT /users/update` (200, 404 user-not-found)
+
+### API manual testing
+Use Postman or any API client for manual verification.
 
 ---
 
