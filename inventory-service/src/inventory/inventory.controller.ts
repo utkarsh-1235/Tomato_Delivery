@@ -23,4 +23,14 @@ export class InventoryController {
     ReserveInventory(@Body() body: ReservedInventory){
       return this.inventoryService.ReserveItem(body);
     }
+
+    @Post('confirm')
+    ConfirmInventory(@Body() body: ReservedInventory){
+      
+    }
+
+    @Post('release')
+    ReleaseInventory(@Body() body: ReservedInventory){
+
+    }
 }

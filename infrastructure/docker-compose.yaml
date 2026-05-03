@@ -85,3 +85,16 @@ services:
     environment:
       KAFKA_BROKER: kafka:9092
     restart: always
+
+  inventory-service:
+    build:
+      context: ../inventory-service
+      dockerfile: Dockerfile
+    ports:
+      - 3015:3020
+    depends_on:
+      - redis
+    env_file:
+      - ../inventory-service/.env
+    environment:
+      REDIS_HOST: redis    
