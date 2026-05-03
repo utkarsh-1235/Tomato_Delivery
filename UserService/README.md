@@ -2,7 +2,7 @@
 
 ## 📌 Overview
 This project is a **User Service** built using **NestJS**, designed for scalable applications like a **Food Delivery System**.  
-It includes authentication, caching, and a modular architecture ready for microservices.
+It includes authentication, caching, and a modular architecture ready for microservices. 
 
 ---
 
