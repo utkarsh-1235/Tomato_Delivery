@@ -24,7 +24,7 @@ import { InventoryModule } from './inventory/inventory.module';
 
         const databaseUrl = config.get<string>('DATABASE_URL');
         if (!databaseUrl) {
-          throw new Error('DATABASE_URL is not set (check order-service/.env or environment variables)');
+          throw new Error('DATABASE_URL is not set');
         }
         return { uri: databaseUrl };
       },
